@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bwastartup/handler"
 	"bwastartup/user"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,11 +22,11 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
-	userInput := user.RegisterUserInput{}
-	userInput.Name = "Tes simpan dari service"
-	userInput.Email = "contoh@gmail.com"
-	userInput.Occupation = "Engineer"
-	userInput.Password = "password"
+	userHandler := handler.NewUserHandler(userService)
+	router := gin.Default()
+	//artinya, kalau ada yang akses ke api/v1, maka akan dilarikan ke RegisterUser
+	api := router.Group("/api/v1")
 
-	userService.RegisterUser(userInput)
+	api.POST("/users", userHandler.RegisterUser)
+	router.Run()
 }
