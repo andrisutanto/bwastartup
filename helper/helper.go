@@ -1,5 +1,7 @@
 package helper
 
+import "github.com/go-playground/validator/v10"
+
 type Response struct {
 	//kalau struct ini diganti ke json, maka yang dipakai yang menggunakan tanda petik
 	Meta Meta        `json:"meta"`
@@ -25,4 +27,14 @@ func APIResponse(message string, code int, status string, data interface{}) Resp
 	}
 
 	return jsonResponse
+}
+
+func FormatValidationError(err error) []string {
+	var errors []string
+
+	for _, e := range err.(validator.ValidationErrors) {
+		errors = append(errors, e.Error())
+	}
+
+	return errors
 }
