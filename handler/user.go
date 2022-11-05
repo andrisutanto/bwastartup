@@ -143,3 +143,12 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	//input dari user
+	//simpan gambar di folder images/
+	//di service kita panggil repo
+	//JWT, sementara hardcode, ambil yang ID login=1
+	//repo ambil data user ID=1
+	//repo update data user simpan lokasi file
+}
