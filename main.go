@@ -3,10 +3,13 @@ package main
 import (
 	"bwastartup/auth"
 	"bwastartup/handler"
+	"bwastartup/helper"
 	"bwastartup/user"
-	"fmt"
 	"log"
+	"net/http"
+	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,22 +30,22 @@ func main() {
 	authService := auth.NewService()
 
 	//validate token
-	token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.FS47zAvPV0vYxBfVNZAhTO3qA5gHetGYc3_VjY19wLU")
-	if err != nil {
-		fmt.Println("ERROR")
-		fmt.Println("ERROR")
-		fmt.Println("ERROR")
-	}
+	// token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.FS47zAvPV0vYxBfVNZAhTO3qA5gHetGYc3_VjY19wLU")
+	// if err != nil {
+	// 	fmt.Println("ERROR")
+	// 	fmt.Println("ERROR")
+	// 	fmt.Println("ERROR")
+	// }
 
-	if token.Valid {
-		fmt.Println("VALID")
-		fmt.Println("VALID")
-		fmt.Println("VALID")
-	} else {
-		fmt.Println("INVALID")
-		fmt.Println("INVALID")
-		fmt.Println("INVALID")
-	}
+	// if token.Valid {
+	// 	fmt.Println("VALID")
+	// 	fmt.Println("VALID")
+	// 	fmt.Println("VALID")
+	// } else {
+	// 	fmt.Println("INVALID")
+	// 	fmt.Println("INVALID")
+	// 	fmt.Println("INVALID")
+	// }
 
 	//fmt.Println(authService.GenerateToken(1))
 
@@ -57,6 +60,70 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
-	api.POST("/avatars", userHandler.UploadAvatar)
+	//tambahkan middleware di avatar
+	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
 	router.Run()
+}
+
+//buat middleware
+//ambil nilai header authorization: bearer token
+//dari header authoriztion, kita ambil nilai token saja
+//validasi token tsb
+//ambil user_id
+//ambil user dari db berdasarkan user-id lewat service
+//set context isinya user
+
+func authMiddleware(authService auth.Service, userService user.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		//dapetin headernya
+		authHeader := c.GetHeader("Authorization")
+
+		//cari apakah ada bearer di header
+		if !strings.Contains(authHeader, "Bearer") {
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			// kalau tidak ada, langsung abort dan beri status unauthorized
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		//kalau ada bearernya
+		//bearer sprti ini: Bearer nilaiTokenDisini
+		tokenString := ""
+		arrayToken := strings.Split(authHeader, " ")
+		if len(arrayToken) == 2 {
+			tokenString = arrayToken[1]
+		}
+
+		//validasi tokennya disini
+		token, err := authService.ValidateToken(tokenString)
+		if err != nil {
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		//ambil data di dalam token / payload / claim
+		claim, ok := token.Claims.(jwt.MapClaims)
+
+		if !ok || !token.Valid {
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		//by default kalau angka, di float64, harus diubah ke INT
+		userID := int(claim["user_id"].(float64))
+
+		//cari user nya disini
+		user, err := userService.GetUserByID(userID)
+		if err != nil {
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		//kalau tidak ada error, then set context user
+		c.Set("currentUser", user)
+
+	}
 }

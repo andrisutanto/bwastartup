@@ -175,8 +175,9 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	//anggap ID nya 1, seharusnya dapat dari JWT
-	userID := 1
+	//dapatkan user ID dari Contetxt currentUser
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
 
 	//tambahkan user ID pada filename agar tidak kembar
 	//path := "images/" + file.Filename
