@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bwastartup/auth"
 	"bwastartup/handler"
 	"bwastartup/user"
 	"log"
@@ -21,11 +22,15 @@ func main() {
 	//contoh buat user
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	//tambahkan auth service
+	authService := auth.NewService()
+
+	//fmt.Println(authService.GenerateToken(1))
 
 	//coba update avatar user 1
-	userService.SaveAvatar(1, "images/1-profile.png")
+	//userService.SaveAvatar(1, "images/1-profile.png")
 
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 	router := gin.Default()
 	//artinya, kalau ada yang akses ke api/v1, maka akan dilarikan ke RegisterUser
 	api := router.Group("/api/v1")

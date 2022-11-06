@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bwastartup/auth"
 	"bwastartup/helper"
 	"bwastartup/user"
 	"fmt"
@@ -11,10 +12,11 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -36,16 +38,20 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	}
 
 	newUser, err := h.userService.RegisterUser(input)
-
 	if err != nil {
 		response := helper.APIResponse("Register Account Failed", http.StatusUnprocessableEntity, "error", nil)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return //kalau ada return, berarti akan di stop saat ada error
 	}
 
-	// token, err := h.jwtService.GenerateToken()
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Register Account Failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return //kalau ada return, berarti akan di stop saat ada error
+	}
 
-	formatter := user.FormatUser(newUser, "tokentes")
+	formatter := user.FormatUser(newUser, token)
 
 	//tambahkan helper response
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
@@ -77,7 +83,6 @@ func (h *userHandler) Login(c *gin.Context) {
 
 	//buat variable utk simpan login
 	loggedinUser, err := h.userService.Login(input)
-
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 
@@ -86,7 +91,14 @@ func (h *userHandler) Login(c *gin.Context) {
 		return //kalau ada return, berarti akan di stop saat ada error
 	}
 
-	formatter := user.FormatUser(loggedinUser, "tokencobahardcodedulu")
+	token, err := h.authService.GenerateToken(loggedinUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Login Failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return //kalau ada return, berarti akan di stop saat ada error
+	}
+
+	formatter := user.FormatUser(loggedinUser, token)
 
 	//tambahkan helper response
 	response := helper.APIResponse("Success login", http.StatusOK, "success", formatter)

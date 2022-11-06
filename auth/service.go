@@ -12,6 +12,10 @@ type jwtService struct {
 //sementara di hardcode untuk secret key nya
 var SECRET_KEY = []byte("COBA_secret_key_dummy")
 
+func NewService() *jwtService {
+	return &jwtService{}
+}
+
 func (s *jwtService) GenerateToken(userID int) (string, error) {
 	claim := jwt.MapClaims{}
 	claim["user_id"] = userID
