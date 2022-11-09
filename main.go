@@ -6,7 +6,6 @@ import (
 	"bwastartup/handler"
 	"bwastartup/helper"
 	"bwastartup/user"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -30,9 +29,9 @@ func main() {
 
 	//campaign
 	campaignRepository := campaign.NewRepository(db)
-	campaigns, err := campaignRepository.FindByUserID(1)
 
-	/* ini untuk testing repository find campaign */
+	/* ini untuk testing repository find campaign
+	campaigns, err := campaignRepository.FindByUserID(1)
 	fmt.Println("debug")
 	fmt.Println("debug")
 	fmt.Println("debug")
@@ -46,11 +45,18 @@ func main() {
 			fmt.Println(campaign.CampaignImages[0].FileName)
 		}
 	}
-	/* end testing repository */
+	end testing repository */
 
 	userService := user.NewService(userRepository)
+	//campaign service
+	campaignService := campaign.NewService(campaignRepository)
 	//tambahkan auth service
 	authService := auth.NewService()
+
+	/*testing service campaign
+	campaigns, _ := campaignService.FindCampaigns(1)
+	fmt.Println(len(campaigns))
+	end testing service campaign*/
 
 	//validate token
 	// token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.FS47zAvPV0vYxBfVNZAhTO3qA5gHetGYc3_VjY19wLU")
