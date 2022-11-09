@@ -2,9 +2,11 @@ package main
 
 import (
 	"bwastartup/auth"
+	"bwastartup/campaign"
 	"bwastartup/handler"
 	"bwastartup/helper"
 	"bwastartup/user"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -25,6 +27,27 @@ func main() {
 
 	//contoh buat user
 	userRepository := user.NewRepository(db)
+
+	//campaign
+	campaignRepository := campaign.NewRepository(db)
+	campaigns, err := campaignRepository.FindByUserID(1)
+
+	/* ini untuk testing repository find campaign */
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println(len(campaigns))
+
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		//ambil gambar
+
+		if len(campaign.CampaignImages) > 0 {
+			fmt.Println(campaign.CampaignImages[0].FileName)
+		}
+	}
+	/* end testing repository */
+
 	userService := user.NewService(userRepository)
 	//tambahkan auth service
 	authService := auth.NewService()
