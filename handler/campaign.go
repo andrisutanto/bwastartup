@@ -65,3 +65,9 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	response := helper.APIResponse("Campaign detail", http.StatusOK, "success", campaign.FormatCampaignDetail(campaignDetail))
 	c.JSON(http.StatusOK, response)
 }
+
+//analisis Create new project / backer
+//tangkap parameter dari user ke input struct
+//ambil current user dari jwt/handler
+//panggil service, parameternya input struct (dan juga buat slug dari name/title)
+//panggil repository untuk simpan data campaign baru
