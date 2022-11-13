@@ -85,6 +85,11 @@ func main() {
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 
 	router := gin.Default()
+
+	//ini untuk gambar, jadi menggunakan static
+	//parameter pertama adalah URL, parameter kedua adalah foldernya
+	router.Static("/images", "./images")
+
 	//artinya, kalau ada yang akses ke api/v1, maka akan dilarikan ke RegisterUser
 	api := router.Group("/api/v1")
 
