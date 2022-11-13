@@ -42,6 +42,7 @@ func (r *repository) FindByID(ID int) (Campaign, error) {
 	var campaign Campaign
 
 	err := r.db.Preload("User").Preload("CampaignImages").Where("id = ?", ID).Find(&campaign).Error
+
 	if err != nil {
 		return campaign, err
 	}

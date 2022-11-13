@@ -18,10 +18,10 @@ type Campaign struct {
 	Slug             string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
+	CampaignImages   []CampaignImage
+	User             user.User
 	//tambahan image
-	CampaignImages []CampaignImage
 	//tambahan user, untuk detail API campaign
-	User user.User
 }
 
 type CampaignImage struct {
