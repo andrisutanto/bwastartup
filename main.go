@@ -81,6 +81,23 @@ func main() {
 	//coba update avatar user 1
 	//userService.SaveAvatar(1, "images/1-profile.png")
 
+	/*START testing service create campaign
+	input := campaign.CreateCampaignInput{}
+	input.Name = "Penggalangan Dana Startup Mania"
+	input.ShortDescription = "short Desc"
+	input.Description = "Long Desc"
+	input.GoalAmount = 100000000
+	input.Perks = "hadiah satu, hadiah dua, hadiah tiga"
+	//untuk input user seolah2 dari user ID 1
+	inputUser, _ := userService.GetUserByID(2)
+	input.User = inputUser
+	//simpan campaign
+	_, err = campaignService.CreateCampaign(input)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	END testing service create campaign */
+
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 
