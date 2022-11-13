@@ -82,6 +82,8 @@ func main() {
 	//userService.SaveAvatar(1, "images/1-profile.png")
 
 	userHandler := handler.NewUserHandler(userService, authService)
+	campaignHandler := handler.NewCampaignHandler(campaignService)
+
 	router := gin.Default()
 	//artinya, kalau ada yang akses ke api/v1, maka akan dilarikan ke RegisterUser
 	api := router.Group("/api/v1")
@@ -91,6 +93,9 @@ func main() {
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	//tambahkan middleware di avatar
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("/campaigns", campaignHandler.GetCampaigns)
+
 	router.Run()
 }
 
