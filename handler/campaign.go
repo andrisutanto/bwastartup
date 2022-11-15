@@ -86,6 +86,7 @@ func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 		return
 	}
 
+	//ini ambil current user dari JWT
 	currentUser := c.MustGet("currentUser").(user.User)
 
 	input.User = currentUser
