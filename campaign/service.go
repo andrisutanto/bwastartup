@@ -86,7 +86,7 @@ func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, inputData Creat
 
 	//cek apakah, user yang sedang login, sama dengan data campaign tersebut
 	if campaign.UserID != inputData.User.ID {
-		return campaign, errors.New("Not an owner of the campaign")
+		return campaign, errors.New("not an owner of the campaign")
 	}
 
 	campaign.Name = inputData.Name
