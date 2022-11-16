@@ -80,6 +80,7 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 }
 
 func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, inputData CreateCampaignInput) (Campaign, error) {
+	//cari dahulu siapa usernya, yang bisa update
 	campaign, err := s.repository.FindByID(inputID.ID)
 	if err != nil {
 		return campaign, err
@@ -105,6 +106,17 @@ func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, inputData Creat
 }
 
 func (s *service) SaveCampaignImage(input CreateCampaignImageInput, fileLocation string) (CampaignImage, error) {
+	//cari dahulu siapa userrnya
+	campaign, err := s.repository.FindByID(input.CampaignID)
+	if err != nil {
+		return CampaignImage{}, err
+	}
+
+	//cek apakah, user yang sedang login, sama dengan data campaign tersebut
+	if campaign.UserID != input.User.ID {
+		return CampaignImage{}, errors.New("not an owner of the campaign")
+	}
+
 	isPrimary := 0
 	//ini kalau set is primary dari usernya true
 	if input.IsPrimary == true {
