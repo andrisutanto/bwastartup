@@ -15,3 +15,8 @@ type CreateCampaignInput struct {
 	User             user.User
 	//untuk user, ambil dari JWT
 }
+
+type CreateCampaignImageInput struct {
+	CampaignID int  `form:"campaign_id" binding:"required"`
+	IsPrimary  bool `form:"is_primary"`
+}
