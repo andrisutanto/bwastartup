@@ -4,6 +4,7 @@ import (
 	"bwastartup/campaign"
 	"bwastartup/helper"
 	"bwastartup/user"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -155,3 +156,58 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
 //repository:
 //1.crerate image/save data image ke dalam table campaign_images
 //2.ubah is_primary true ke false
+
+func (h *campaignHandler) UploadImage(c *gin.Context) {
+	//tangkap campaign ID dan primarynya, dari input.go
+	var input campaign.CreateCampaignImageInput
+
+	err := c.ShouldBind(&input)
+
+	if err != nil {
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	//tangkap file yang diupload
+	file, err := c.FormFile("file")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	//dapatkan user ID dari Contetxt currentUser
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
+
+	//tambahkan user ID pada filename agar tidak kembar
+	//path := "images/" + file.Filename
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
+
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.service.SaveCampaignImage(input, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	//kalau tidak ada error, maka
+	data := gin.H{"is_uploaded": true}
+	response := helper.APIResponse("Campaign image successfully uploaded", http.StatusOK, "success", data)
+
+	c.JSON(http.StatusOK, response)
+}

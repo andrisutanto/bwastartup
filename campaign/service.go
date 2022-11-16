@@ -106,7 +106,8 @@ func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, inputData Creat
 
 func (s *service) SaveCampaignImage(input CreateCampaignImageInput, fileLocation string) (CampaignImage, error) {
 	isPrimary := 0
-	if input.IsPrimary {
+	//ini kalau set is primary dari usernya true
+	if input.IsPrimary == true {
 		isPrimary = 1
 
 		_, err := s.repository.MarkAllImagesAsNonPrimary(input.CampaignID)
