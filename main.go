@@ -30,6 +30,9 @@ func main() {
 	//campaign
 	campaignRepository := campaign.NewRepository(db)
 
+	//transaction
+	transactionRepository := transaction.NewRepository(db)
+
 	/* ini untuk testing repository find campaign
 	campaigns, err := campaignRepository.FindByUserID(1)
 	fmt.Println("debug")
