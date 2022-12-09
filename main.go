@@ -57,7 +57,7 @@ func main() {
 	//tambahkan auth service
 	authService := auth.NewService()
 	//transaction service
-	transactionService := transaction.NewService(transactionRepository)
+	transactionService := transaction.NewService(transactionRepository, campaignRepository)
 
 	/*testing service campaign
 	campaigns, _ := campaignService.FindCampaigns(1)
