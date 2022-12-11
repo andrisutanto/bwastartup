@@ -71,3 +71,9 @@ func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+//untuk midtrans
+//ada input dari user (jumlah nilai/amount)
+//handler tangkap input terus dimapping ke input struct
+//panggil service utk simpan transaksi, panggil snap gateway (midtrans)
+//service panggil repository utk create new transaction data
