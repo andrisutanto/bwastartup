@@ -59,6 +59,18 @@ func main() {
 	//transaction service
 	transactionService := transaction.NewService(transactionRepository, campaignRepository)
 
+	//start untuk testing service create new transaction
+	// user, _ := userService.GetUserByID(1)
+
+	// input := transaction.CreateTransactionInput{
+	// 	CampaignID: 7,
+	// 	Amount:     500000,
+	// 	User:       user,
+	// }
+
+	// transactionService.CreateTransaction(input)
+	//end untuk testing service create new transaction
+
 	/*testing service campaign
 	campaigns, _ := campaignService.FindCampaigns(1)
 	fmt.Println(len(campaigns))
