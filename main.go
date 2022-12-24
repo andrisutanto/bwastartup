@@ -5,6 +5,7 @@ import (
 	"bwastartup/campaign"
 	"bwastartup/handler"
 	"bwastartup/helper"
+	"bwastartup/payment"
 	"bwastartup/transaction"
 	"bwastartup/user"
 	"log"
@@ -56,8 +57,10 @@ func main() {
 	campaignService := campaign.NewService(campaignRepository)
 	//tambahkan auth service
 	authService := auth.NewService()
+	//tambahkan payment service
+	paymentService := payment.NewService()
 	//transaction service
-	transactionService := transaction.NewService(transactionRepository, campaignRepository)
+	transactionService := transaction.NewService(transactionRepository, campaignRepository, paymentService)
 
 	//start untuk testing service create new transaction
 	// user, _ := userService.GetUserByID(1)
@@ -143,6 +146,7 @@ func main() {
 
 	api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
 
 	router.Run()
 }
