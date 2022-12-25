@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -124,6 +125,9 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
+
+	//tambah CORS
+	router.Use(cors.Default())
 
 	//ini untuk gambar, jadi menggunakan static
 	//parameter pertama adalah URL, parameter kedua adalah foldernya
